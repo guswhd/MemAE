@@ -22,6 +22,7 @@ def train():
     male_dir = './spectrogram/Male'
     female_dir = './spectrogram/Female'
     dataset = dman.Dataset(normalize=FLAGS.datnorm)
+    print(dataset.channel)
     neuralnet = nn.MemAE(height=dataset.height, width=dataset.width, channel=dataset.channel, leaning_rate=FLAGS.lr, ckpt_dir=CKPT_DIR)
 
     # Checkpoint 설정

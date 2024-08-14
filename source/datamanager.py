@@ -6,7 +6,7 @@ from sklearn.utils import shuffle
 
 class Dataset(object):
 
-    def __init__(self, male_dir = './spectrogram/Male', female_dir = './spectrogram/Female', img_size=(250, 100), normalize=True):
+    def __init__(self, male_dir = './spectrogram/Male', female_dir = './spectrogram/Female', img_size=(64, 64), normalize=True):
 
         print("\nInitializing Dataset...")
 
@@ -46,7 +46,7 @@ class Dataset(object):
         for filename in os.listdir(directory):
             if filename.endswith(".jpg") or filename.endswith(".png"):
                 img_path = os.path.join(directory, filename)
-                image = Image.open(img_path).convert('L')  # Convert to grayscale
+                image = Image.open(img_path)  # Convert to grayscale
                 image = image.resize(self.img_size)
                 image = np.array(image)
                 images.append(image)
