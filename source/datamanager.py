@@ -18,7 +18,6 @@ class Dataset(object):
         self.x_tr, self.y_tr = self.load_images(male_dir, label=1)  # Male images labeled as 1
         self.x_te, self.y_te = self.load_images(female_dir, label=0)  # Female images labeled as 0
 
-        self.split_dataset()
 
         self.num_tr, self.num_te = self.x_tr.shape[0], self.x_te.shape[0]
         self.idx_tr, self.idx_te = 0, 0
@@ -46,7 +45,7 @@ class Dataset(object):
         for filename in os.listdir(directory):
             if filename.endswith(".jpg") or filename.endswith(".png"):
                 img_path = os.path.join(directory, filename)
-                image = Image.open(img_path)  # Convert to grayscale
+                image = Image.open(img_path)  
                 image = image.resize(self.img_size)
                 image = np.array(image)
                 images.append(image)
@@ -55,9 +54,6 @@ class Dataset(object):
         labels = np.array(labels, dtype=np.int32)
         return images, labels
 
-    def split_dataset(self):
-        self.x_tr = np.expand_dims(self.x_tr, axis=-1)  # Adding channel dimension
-        self.x_te = np.expand_dims(self.x_te, axis=-1)  # Adding channel dimension
 
     def reset_idx(self): 
         self.idx_tr, self.idx_te = 0, 0

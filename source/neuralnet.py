@@ -91,7 +91,6 @@ class MemAE(object):
         else: return w
 
     def conv2d(self, inputs, variables, stride_size, padding):
-
         [weights, biasis] = variables
         out = tf.nn.conv2d(inputs, weights, \
             strides=[1, stride_size, stride_size, 1], padding=padding) + biasis
