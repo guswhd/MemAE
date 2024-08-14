@@ -32,12 +32,26 @@ TensorFlow implementation of Memorizing Normality to Detect Anomaly: Memory-augm
   <p>Box plot and histogram of restoration loss in test procedure.</p>
 </div>
 
-## Environment
-* Python 3.7.4  
-* Tensorflow 2.1.0  
-* Numpy 1.18.1  
-* Matplotlib 3.1.3  
-* Scikit Learn (sklearn) 0.22.1  
+
+# implementaion
+
+#### colab에서 수행
+
+1. **clone repository**
+```
+!git clone https://github.com/YeongHyeon/MemAE-TF2.git
+```
+
+2.  train
+```
+!git python train.py
+```
+
+3. test
+```
+!git python test.py
+```
+
 
 ## Reference
 [1] Dong Gong et al. (2019). <a href="https://arxiv.org/abs/1904.02639">Memorizing Normality to Detect Anomaly: Memory-augmented Deep Autoencoder for Unsupervised Anomaly Detection</a>. arXiv preprint arXiv:1904.02639.
