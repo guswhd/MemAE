@@ -51,7 +51,7 @@ if __name__ == '__main__':
     parser.add_argument('--datnorm', type=bool, default=True, help='Data normalization')
     parser.add_argument('--lr', type=int, default=1e-4, help='Learning rate for training')
     parser.add_argument('--epoch', type=int, default=1000, help='Training epoch')
-    parser.add_argument('--batch', type=int, default=32, help='Mini batch size')
+    parser.add_argument('--batch', type=int, default=64, help='Mini batch size')
 
     FLAGS, unparsed = parser.parse_known_args()
 

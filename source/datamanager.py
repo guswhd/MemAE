@@ -6,18 +6,28 @@ from sklearn.utils import shuffle
 
 class Dataset(object):
 
-    def __init__(self, male_dir = './spectrogram/Male', female_dir = './spectrogram/Female', img_size=(64, 64), normalize=True):
+    def __init__(self, male_dir='./spectrogram/Male', female_dir='./spectrogram/Female', img_size=(160, 64), normalize=True):
 
         print("\nInitializing Dataset...")
-
 
         self.normalize = normalize
         self.img_size = img_size
 
         # Load male and female data
-        self.x_tr, self.y_tr = self.load_images(male_dir, label=1)  # Male images labeled as 1
-        self.x_te, self.y_te = self.load_images(female_dir, label=0)  # Female images labeled as 0
+        male_images, male_labels = self.load_images(male_dir, label=1)  # Male images labeled as 1
+        female_images, female_labels = self.load_images(female_dir, label=0)  # Female images labeled as 0
 
+        # Split male data into 80% training and 20% testing
+        split_idx = int(0.8 * len(male_images))
+        self.x_tr, self.y_tr = male_images[:split_idx], male_labels[:split_idx]
+        x_te_male, y_te_male = male_images[split_idx:], male_labels[split_idx:]
+
+        # Combine the 20% male data with all female data for testing
+        self.x_te = np.concatenate([x_te_male, female_images], axis=0)
+        self.y_te = np.concatenate([y_te_male, female_labels], axis=0)
+
+        # Shuffle test data to mix male and female data
+        self.x_te, self.y_te = shuffle(self.x_te, self.y_te)
 
         self.num_tr, self.num_te = self.x_tr.shape[0], self.x_te.shape[0]
         self.idx_tr, self.idx_te = 0, 0
@@ -27,8 +37,10 @@ class Dataset(object):
         x_sample = self.x_te[0]
         self.height = x_sample.shape[0]
         self.width = x_sample.shape[1]
-        try: self.channel = x_sample.shape[2]
-        except: self.channel = 1
+        try: 
+            self.channel = x_sample.shape[2]
+        except: 
+            self.channel = 1
 
         self.min_val, self.max_val = x_sample.min(), x_sample.max()
 
@@ -53,7 +65,6 @@ class Dataset(object):
         images = np.array(images, dtype=np.float32)
         labels = np.array(labels, dtype=np.int32)
         return images, labels
-
 
     def reset_idx(self): 
         self.idx_tr, self.idx_te = 0, 0
