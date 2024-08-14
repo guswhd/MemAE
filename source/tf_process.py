@@ -69,20 +69,40 @@ def latent_plot(latent, y, n, savename=""):
     plt.savefig(savename)
     plt.close()
 
-def boxplot(contents, savename=""):
+def boxplot_3d_and_2d(contents, savename=""):
+    fig = plt.figure(figsize=(12, 6))
 
-    data, label = [], []
-    for cidx, content in enumerate(contents):
-        data.append(content)
-        label.append("class-%d" %(cidx))
+    # 3D 산점도
+    ax1 = fig.add_subplot(121, projection='3d')
+    for i, content in enumerate(contents):
+        z = content
+        x = np.full_like(z, i)  # X축을 데이터의 인덱스로 설정
+        y = np.arange(len(z))   # Y축을 데이터 포인트의 인덱스로 설정
+        ax1.scatter(x, y, z, label=f'class-{i+1}')
 
-    plt.clf()
-    fig, ax1 = plt.subplots()
-    bp = ax1.boxplot(data, showfliers=True, whis=3)
-    ax1.set_xticklabels(label, rotation=45)
+    ax1.set_xlabel('Class')
+    ax1.set_ylabel('Sample Index')
+    ax1.set_zlabel('Value')
+    ax1.legend()
+
+    # 2D 플롯
+    ax2 = fig.add_subplot(122)
+    for i, content in enumerate(contents):
+        y = content
+        x = np.arange(len(y))  # Sample Index를 X축으로 설정
+        ax2.plot(x, y, label=f'class-{i+1}', marker='o', linestyle='none')
+
+    ax2.set_xlabel('Sample Index')
+    ax2.set_ylabel('Value')
+    ax2.legend()
 
     plt.tight_layout()
-    plt.savefig(savename)
+    
+    # 2D 플롯 저장
+    if savename:
+        plt.savefig(savename)
+
+    plt.show()
     plt.close()
 
 def histogram(contents, savename=""):
@@ -144,23 +164,54 @@ def test(neuralnet, dataset, batch_size):
     for result_name in result_list: make_dir(path=os.path.join("test", result_name))
 
     scores_normal, scores_abnormal = [], []
+    
     while(True):
-        x_te, y_te, terminator = dataset.next_test(1) # y_te does not used in this prj.
+        x_te, y_te, terminator = dataset.next_test(1)
 
         _, score_anomaly, _, _ = neuralnet.step(x=x_te, iteration=0, train=False)
-        if(y_te == 1): scores_normal.append(score_anomaly)
-        else: scores_abnormal.append(score_anomaly)
+        if y_te == 1: 
+            scores_normal.append(score_anomaly)
+        else: 
+            scores_abnormal.append(score_anomaly)
 
-        if(terminator): break
+        if terminator: break
 
+    # Calculate statistics after processing all test data
     scores_normal = np.asarray(scores_normal)
     scores_abnormal = np.asarray(scores_abnormal)
     normal_avg, normal_std = np.average(scores_normal), np.std(scores_normal)
     abnormal_avg, abnormal_std = np.average(scores_abnormal), np.std(scores_abnormal)
+    outbound = normal_avg + (normal_std * 3)
+
     print("Normal  avg: %.5f, std: %.5f" %(normal_avg, normal_std))
     print("Abnormal  avg: %.5f, std: %.5f" %(abnormal_avg, abnormal_std))
-    outbound = normal_avg + (normal_std * 3)
     print("Outlier boundary of normal data: %.5f" %(outbound))
+
+    # Initialize metrics
+    tp, fp, fn, tn = 0, 0, 0, 0  # True Positives, False Positives, False Negatives, True Negatives
+    
+    for score_anomaly, y_te in zip(np.concatenate([scores_normal, scores_abnormal]), [1] * len(scores_normal) + [0] * len(scores_abnormal)):
+        if score_anomaly > outbound:
+            if y_te == 0:  # 실제 비정상
+                tp += 1  # True Positive
+            else:  # 실제 정상
+                fp += 1  # False Positive
+        else:
+            if y_te == 0:  # 실제 비정상
+                fn += 1  # False Negative
+            else:  # 실제 정상
+                tn += 1  # True Negative
+
+    # Calculate Precision, Recall, Accuracy, F1-score
+    precision = tp / (tp + fp) if (tp + fp) > 0 else 0
+    recall = tp / (tp + fn) if (tp + fn) > 0 else 0
+    accuracy = (tp + tn) / (tp + fp + fn + tn) if (tp + fp + fn + tn) > 0 else 0
+    f1_score = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
+    print(f"tp: {tp:f}")
+    print(f"fp: {fp:f}")
+    print(f"tn: {tn:f}")
+    print(f"fn: {fn:f}")
+    
 
     histogram(contents=[scores_normal, scores_abnormal], savename="histogram-test.png")
 
@@ -192,4 +243,9 @@ def test(neuralnet, dataset, batch_size):
 
         if(terminator): break
 
-    boxplot(contents=loss4box, savename="test-box.png")
+    print(f"Precision: {precision:.3f}")
+    print(f"Recall: {recall:.3f}")
+    print(f"Accuracy: {accuracy:.3f}")
+    print(f"F1-Score: {f1_score:.3f}")
+    # 3D 박스플롯 함수 호출
+    boxplot_3d_and_2d(contents=loss4box, savename="test-box.png")
