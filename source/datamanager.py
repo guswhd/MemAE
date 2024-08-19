@@ -6,7 +6,7 @@ from sklearn.utils import shuffle
 
 class Dataset(object):
 
-    def __init__(self, male_dir='./spectrogram/Male', female_dir='./spectrogram/Female', img_size=(160, 64), normalize=True):
+    def __init__(self, normal_dir='./spectrogram/abnormal', abnormal_dir='./spectrogram/normal', img_size=(160, 64), normalize=True):
 
         print("\nInitializing Dataset...")
 
@@ -14,17 +14,17 @@ class Dataset(object):
         self.img_size = img_size
 
         # Load male and female data
-        male_images, male_labels = self.load_images(male_dir, label=1)  # Male images labeled as 1
-        female_images, female_labels = self.load_images(female_dir, label=0)  # Female images labeled as 0
+        normal_images, noraml_labels = self.load_images(normal_dir, label=1)  # Male images labeled as 1
+        abnormal_images, abnormal_labels = self.load_images(abnormal_dir, label=0)  # Female images labeled as 0
 
         # Split male data into 80% training and 20% testing
-        split_idx = int(0.8 * len(male_images))
-        self.x_tr, self.y_tr = male_images[:split_idx], male_labels[:split_idx]
-        x_te_male, y_te_male = male_images[split_idx:], male_labels[split_idx:]
+        split_idx = int(0.8 * len(normal_images))
+        self.x_tr, self.y_tr = normal_images[:split_idx], noraml_labels[:split_idx]
+        x_te_male, y_te_male = normal_images[split_idx:], noraml_labels[split_idx:]
 
         # Combine the 20% male data with all female data for testing
-        self.x_te = np.concatenate([x_te_male, female_images], axis=0)
-        self.y_te = np.concatenate([y_te_male, female_labels], axis=0)
+        self.x_te = np.concatenate([x_te_male, abnormal_images], axis=0)
+        self.y_te = np.concatenate([y_te_male, abnormal_labels], axis=0)
 
         # Shuffle test data to mix male and female data
         self.x_te, self.y_te = shuffle(self.x_te, self.y_te)
