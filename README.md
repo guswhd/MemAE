@@ -39,7 +39,7 @@ TensorFlow implementation of Memorizing Normality to Detect Anomaly: Memory-augm
 
 1. **clone repository**
 ```
-!git clone https://github.com/YeongHyeon/MemAE-TF2.git
+!git clone https://github.com/guswhd/MemAE.git
 ```
 
 2.  train
