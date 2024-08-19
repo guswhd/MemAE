@@ -152,6 +152,7 @@ def training(neuralnet, dataset, epochs, batch_size, normalize=True):
 
         print("Epoch [%d / %d] (%d iteration)  MSE:%.3f, W-ETRP:%.3f, Total:%.3f" \
             %(epoch, epochs, iteration, np.sum(mse), np.sum(w_etrp), loss))
+        return loss
 
 def test(neuralnet, dataset, batch_size):
 

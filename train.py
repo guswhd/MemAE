@@ -48,6 +48,9 @@ def train():
     for epoch in range(FLAGS.epoch):
         avg_loss = tfp.training(neuralnet=neuralnet, dataset=dataset, epochs=1, batch_size=FLAGS.batch, normalize=True)
 
+        if avg_loss is None:
+            raise ValueError("Training function did not return a loss value.")
+
         # Early stopping 체크
         if avg_loss < best_loss - min_delta:
             best_loss = avg_loss
