@@ -4,7 +4,7 @@ import tensorflow as tf
 from PIL import Image
 from sklearn.utils import shuffle
 
-class SpectrogramDataset:
+class Dataset:
     def __init__(self, train_dir='./spectrogram/train', test_dir='./spectrogram/test', img_size=(64, 160), normalize=True):
         print("\nInitializing Dataset...")
 
