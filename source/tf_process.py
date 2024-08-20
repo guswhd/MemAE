@@ -30,7 +30,7 @@ def dat2canvas(data):
         for x in range(numd):
             try: tmp = data[x+(y*numd)]
             except: pass
-            else: canvas[(y*dh):(y*dh)+64, (x*dw):(x*dw)+160, :] = tmp
+            else: canvas[(y*dh):(y*dh)+160, (x*dw):(x*dw)+64, :] = tmp
     if(dc == 1):
         canvas = gray2rgb(gray=canvas)
 

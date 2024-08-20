@@ -6,7 +6,7 @@ from sklearn.utils import shuffle
 
 class Dataset(object):
 
-    def __init__(self, normal_dir='./spectrogram/abnormal', abnormal_dir='./spectrogram/normal', img_size=(160, 64), normalize=True):
+    def __init__(self, normal_dir='./spectrogram/abnormal', abnormal_dir='./spectrogram/normal', img_size=(64, 160), normalize=True):
 
         print("\nInitializing Dataset...")
 

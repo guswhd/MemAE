@@ -206,7 +206,7 @@ class MemAE(object):
 
         [n, h, w, c] = self.conv_shapes[-1]
         decode1 = self.conv2d_tr(inputs=z_hat, variables=self.get_weight(vshape=[3, 3, c, 64], transpose=True, name="decode1"), \
-            output_shape=[tf.shape(z_hat)[0], 16, 40, 32], stride_size=2, padding='SAME')
+            output_shape=[tf.shape(z_hat)[0], 40, 16, 32], stride_size=2, padding='SAME')
         decode1_bn = self.batch_norm(inputs=decode1, name="decode1_bn")
         decode1_act = tf.keras.activations.relu(decode1_bn)
         if(verbose): print(decode1_act.shape)
