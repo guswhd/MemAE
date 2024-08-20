@@ -4,29 +4,35 @@ import tensorflow as tf
 from PIL import Image
 from sklearn.utils import shuffle
 
-class Dataset(object):
-
-    def __init__(self, normal_dir='./spectrogram/abnormal', abnormal_dir='./spectrogram/normal', img_size=(64, 160), normalize=True):
-
+class SpectrogramDataset:
+    def __init__(self, train_dir='./spectrogram/train', test_dir='./spectrogram/test', img_size=(64, 160), normalize=True):
         print("\nInitializing Dataset...")
 
         self.normalize = normalize
         self.img_size = img_size
 
-        # Load male and female data
-        normal_images, noraml_labels = self.load_images(normal_dir, label=1)  # Male images labeled as 1
-        abnormal_images, abnormal_labels = self.load_images(abnormal_dir, label=0)  # Female images labeled as 0
+        # Load train data (normal and abnormal)
+        normal_train_dir = os.path.join(train_dir, 'normal')
+        abnormal_train_dir = os.path.join(train_dir, 'abnormal')
+        normal_train_images, normal_train_labels = self.load_images(normal_train_dir, label=1)  # Normal images labeled as 1
+        abnormal_train_images, abnormal_train_labels = self.load_images(abnormal_train_dir, label=0)  # Abnormal images labeled as 0
 
-        # Split male data into 80% training and 20% testing
-        split_idx = int(0.8 * len(normal_images))
-        self.x_tr, self.y_tr = normal_images[:split_idx], noraml_labels[:split_idx]
-        x_te_male, y_te_male = normal_images[split_idx:], noraml_labels[split_idx:]
+        # Combine normal and abnormal training data
+        self.x_tr = np.concatenate([normal_train_images, abnormal_train_images], axis=0)
+        self.y_tr = np.concatenate([normal_train_labels, abnormal_train_labels], axis=0)
 
-        # Combine the 20% male data with all female data for testing
-        self.x_te = np.concatenate([x_te_male, abnormal_images], axis=0)
-        self.y_te = np.concatenate([y_te_male, abnormal_labels], axis=0)
+        # Load test data (normal and abnormal)
+        normal_test_dir = os.path.join(test_dir, 'normal')
+        abnormal_test_dir = os.path.join(test_dir, 'abnormal')
+        normal_test_images, normal_test_labels = self.load_images(normal_test_dir, label=1)  # Normal images labeled as 1
+        abnormal_test_images, abnormal_test_labels = self.load_images(abnormal_test_dir, label=0)  # Abnormal images labeled as 0
 
-        # Shuffle test data to mix male and female data
+        # Combine normal and abnormal test data
+        self.x_te = np.concatenate([normal_test_images, abnormal_test_images], axis=0)
+        self.y_te = np.concatenate([normal_test_labels, abnormal_test_labels], axis=0)
+
+        # Shuffle training and test data
+        self.x_tr, self.y_tr = shuffle(self.x_tr, self.y_tr)
         self.x_te, self.y_te = shuffle(self.x_te, self.y_te)
 
         self.num_tr, self.num_te = self.x_tr.shape[0], self.x_te.shape[0]
