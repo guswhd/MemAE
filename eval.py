@@ -12,7 +12,7 @@ class CNN(nn.Module):
         super(CNN, self).__init__()
         self.conv1 = nn.Conv2d(3, 16, kernel_size=3, stride=1, padding=1)
         self.conv2 = nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=1)
-        self.fc1 = nn.Linear(32 * 16 * 16, 128)
+        self.fc1 = nn.Linear(32 * 40 * 16, 128)
         self.fc2 = nn.Linear(128, 2)
         self.pool = nn.MaxPool2d(2, 2)
         self.relu = nn.ReLU()
@@ -20,7 +20,7 @@ class CNN(nn.Module):
     def forward(self, x):
         x = self.pool(self.relu(self.conv1(x)))
         x = self.pool(self.relu(self.conv2(x)))
-        x = x.view(-1, 32 * 16 * 16)  # Flatten
+        x = x.view(-1, 32 * 40 * 16)  # Flatten
         x = self.relu(self.fc1(x))
         x = self.fc2(x)
         return x
@@ -30,7 +30,7 @@ test_dir = 'spectrogram/test'
 
 # 데이터 전처리
 transform = transforms.Compose([
-    transforms.Resize((64, 64)),    # 이미지 크기 조정
+    transforms.Resize((160, 64)),    # 이미지 크기 조정
     transforms.ToTensor(),          # 이미지를 텐서로 변환
     transforms.Normalize((0.5,), (0.5,))  # 정규화
 ])
