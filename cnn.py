@@ -117,6 +117,3 @@ early_stopping = EarlyStopping(patience=5, verbose=True)
 
 # 모델 학습
 train(model, train_loader, test_loader, criterion, optimizer, early_stopping)
-
-# 모델 저장
-# 얼리 스탑핑이 최적의 모델을 이미 저장하므로, 별도로 저장할 필요가 없습니다.
