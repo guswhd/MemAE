@@ -35,19 +35,20 @@ class CNN(nn.Module):
         self.fc2 = nn.Linear(128, 2)
         self.pool = nn.MaxPool2d(2, 2)
         self.relu = nn.ReLU()
+        self.dropout = nn.Dropout(0.5) 
     
     def forward(self, x):
         x = self.pool(self.relu(self.conv1(x)))
         x = self.pool(self.relu(self.conv2(x)))
         x = x.view(-1, 32 * 40 * 16)  # Flatten
-        x = self.relu(self.fc1(x))
+        x = self.dropout(self.relu(self.fc1(x)))
         x = self.fc2(x)
         return x
 
 # 모델, 손실 함수, 옵티마이저 정의
 model = CNN()
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
+optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
 # 얼리 스탑핑 클래스 정의
 class EarlyStopping:
@@ -117,6 +118,3 @@ early_stopping = EarlyStopping(patience=5, verbose=True)
 
 # 모델 학습
 train(model, train_loader, test_loader, criterion, optimizer, early_stopping)
-
-# 모델 저장
-# 얼리 스탑핑이 최적의 모델을 이미 저장하므로, 별도로 저장할 필요가 없습니다.

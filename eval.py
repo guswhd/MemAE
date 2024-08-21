@@ -16,12 +16,13 @@ class CNN(nn.Module):
         self.fc2 = nn.Linear(128, 2)
         self.pool = nn.MaxPool2d(2, 2)
         self.relu = nn.ReLU()
+        self.dropout = nn.Dropout(0.5) 
     
     def forward(self, x):
         x = self.pool(self.relu(self.conv1(x)))
         x = self.pool(self.relu(self.conv2(x)))
         x = x.view(-1, 32 * 40 * 16)  # Flatten
-        x = self.relu(self.fc1(x))
+        x = self.dropout(self.relu(self.fc1(x)))
         x = self.fc2(x)
         return x
 
